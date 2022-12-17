@@ -56,11 +56,11 @@ export const TransactionsProvider = ({ children }) => {
             ).toLocaleString(),
             message: transaction.message,
             keyword: transaction.keyword,
-            amount: parseInt(transaction.amount._hex) / 10 ** 18,
+            amount: transaction.amount / 1e18,
           })
         );
 
-        console.log(structuredTransactions);
+        // console.log(structuredTransactions);
 
         setTransactions(structuredTransactions);
       } else {
@@ -148,11 +148,12 @@ export const TransactionsProvider = ({ children }) => {
       if (ethereum) {
         const { addressTo, amount, keyword, message } = formData;
         const transactionsContract = createEthereumContract();
-        const parsedAmount = ethers.utils.parseEther(amount);
+        let tempAmount = (amount * 1e18).toString();
+        const parsedAmount = ethers.utils.parseEther(tempAmount);
         const transactionParameters = {
           from: currentAccount,
           to: TOKEN_CONTRACT_ADDRESS,
-          data: getDataFieldValue(addressTo, amount),
+          data: getDataFieldValue(addressTo, tempAmount),
         };
         await ethereum.request({
           method: "eth_sendTransaction",
